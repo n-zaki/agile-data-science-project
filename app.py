@@ -77,20 +77,37 @@ if st.button("Predict"):
 # ----------------------------
 st.header("📈 Model Monitoring Dashboard")
 
-# Metric 1: Churn Rate (Business Metric)
-churn_rate = df['Churn'].mean()
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, classification_report
 
+# Prepare simple model for monitoring
+X = df[['Monthly_Charges', 'Tenure_Months']]
+y = df['Churn']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+# Metric 1: Accuracy (NOW FIXED ✔)
+acc = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+st.metric("Model Accuracy", f"{acc:.2%}")
+st.metric("F1 Score", f"{f1:.2f}")
+
+# Metric 2: Churn Rate
+churn_rate = df['Churn'].mean()
 st.metric("Churn Rate", f"{churn_rate:.2%}")
 
-# Metric 2: Data Size (Operational Metric)
+# Metric 3: Data Size
 st.metric("Total Customers", df.shape[0])
 
-# Metric 3: Average Monthly Charges
-avg_charge = df['Monthly_Charges'].mean()
-st.metric("Avg Monthly Charges", f"{avg_charge:.2f}")
-
-
-# Visualization: Churn distribution monitoring
+# Visualization
 st.subheader("Churn Distribution Monitoring")
 fig4, ax4 = plt.subplots()
 df['Churn'].value_counts().plot(kind='bar', ax=ax4)
