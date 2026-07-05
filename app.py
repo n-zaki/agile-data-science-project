@@ -71,3 +71,57 @@ if st.button("Predict"):
     pred = model.predict([[monthly, tenure]])
     result = "Will Churn ❌" if pred[0] == 1 else "Will NOT Churn ✅"
     st.success(result)
+
+# ----------------------------
+# Q5 (a) MONITORING METRICS
+# ----------------------------
+st.header("📈 Model Monitoring Dashboard")
+
+# Metric 1: Churn Rate (Business Metric)
+churn_rate = df['Churn'].mean()
+
+st.metric("Churn Rate", f"{churn_rate:.2%}")
+
+# Metric 2: Data Size (Operational Metric)
+st.metric("Total Customers", df.shape[0])
+
+# Metric 3: Average Monthly Charges
+avg_charge = df['Monthly_Charges'].mean()
+st.metric("Avg Monthly Charges", f"{avg_charge:.2f}")
+
+
+# Visualization: Churn distribution monitoring
+st.subheader("Churn Distribution Monitoring")
+fig4, ax4 = plt.subplots()
+df['Churn'].value_counts().plot(kind='bar', ax=ax4)
+st.pyplot(fig4)
+
+
+# ----------------------------
+# Q5 (b) DATA DRIFT ANALYSIS (SIMPLE VERSION)
+# ----------------------------
+st.header("📉 Data Drift Analysis")
+
+# Split dataset into "old vs new simulation"
+split_point = int(len(df) * 0.7)
+
+train_data = df.iloc[:split_point]
+new_data = df.iloc[split_point:]
+
+# Compare Monthly Charges distribution
+st.subheader("Monthly Charges Distribution Shift")
+
+fig5, ax5 = plt.subplots()
+
+ax5.hist(train_data['Monthly_Charges'], alpha=0.5, label="Train Data")
+ax5.hist(new_data['Monthly_Charges'], alpha=0.5, label="New Data")
+
+ax5.legend()
+
+st.pyplot(fig5)
+
+
+# Simple numeric drift summary
+st.write("### Summary Comparison")
+st.write("Train Avg Monthly Charges:", round(train_data['Monthly_Charges'].mean(), 2))
+st.write("New Avg Monthly Charges:", round(new_data['Monthly_Charges'].mean(), 2))
