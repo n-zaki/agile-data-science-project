@@ -78,3 +78,4 @@ y_pred_smote = model_smote.predict(X_test)
 print("\nIMPROVED MODEL (SMOTE)")
 print("Accuracy:", accuracy_score(y_test, y_pred_smote))
 print(classification_report(y_test, y_pred_smote))
+
